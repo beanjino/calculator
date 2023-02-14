@@ -82,12 +82,12 @@ public class Calculator extends JFrame {
                 array.add(num);
                 num = "";
                 array.add(ch + "");
+                array.remove("");
             } else {
                 num = num + ch;
             }
         }
         array.add(num);
-        array.remove("");
     }
     public double calculate(String text){
         stringParsing(text);
@@ -95,42 +95,60 @@ public class Calculator extends JFrame {
         double prev = 0;
         double current = 0;
         String mode = "";
-
         for (int i = 0; i < array.size(); i++) {
             String s = array.get(i);
-//            if(s.equals("+")){
-//                mode = "add";
-//            }
-//            else if(s.equals("-")) {
-//                mode = "sub";
-//            }
             if(s.equals("×")) {
                 mode = "mul";
             }
             else if(s.equals("÷")) {
                 mode = "div";
             }
-            else{
+            else {
+                System.out.println(array);
                 if ((mode.equals("mul") || mode.equals("div"))) {
-                    Double one = Double.parseDouble(array.get(i-2));
-                    Double two = Double.parseDouble(array.get(i));
+                    System.out.println("get = "+array.get(i));
                     double result = 0.0;
-
-                    if(mode.equals("mul")){
-                        result = one * two;
+                    Double one = 0.0;
+                    Double two = 0.0;
+                    if (array.get(i).equals("-")) {
+                        System.out.println("음수!");
+                        two = -(Double.parseDouble(array.get(i + 1)));
+                        try {
+                            if (array.get(i - 3).equals("-")) {
+                                one = -(Double.parseDouble(array.get(i - 2)));
+                                array.remove(i - 3);
+                                i -= 1;
+                            }
+                        } catch (IndexOutOfBoundsException e) {
+                            one = Double.parseDouble(array.get(i - 2));
+                        }
+                        System.out.println("one = " + one + " two = " + two);
+                        array.remove(i);
                     }
-                    else{
+                    else {
+                        System.out.println("i = "+i);
+                        System.out.println("!!!!");
+                        one = Double.parseDouble(array.get(i - 2));
+                        two = Double.parseDouble(array.get(i));
+                        System.out.println("one = " + one + " two = " + two);
+                    }
+                    if (mode.equals("mul")) {
+                        result = one * two;
+                        System.out.println("result = " + result);
+                    } else {
                         result = one / two;
+                        System.out.println("result = " + result);
                     }
                     array.add(i + 1, Double.toString(result));
-                    for(int j=0; j<3; j++){
+                    for (int j = 0; j < 3; j++) {
                         array.remove(i - 2);
                     }
                     i -= 2;//결과값이 생긴 인덱스로 이동
+                    mode="";
                 }
             }
         }//곱셈 나눗셈 우선 계산
-
+        System.out.println(array);
         for(String s : array){
             if(s.equals("+")){
                 mode = "add";
@@ -142,7 +160,6 @@ public class Calculator extends JFrame {
                 current = Double.parseDouble(s);
                 if (mode.equals("add")){
                     prev += current;
-                    System.out.println("add prev = " + prev + " current = " + current);
                 }
                 else if(mode.equals("sub")){
                     prev -= current;
@@ -150,7 +167,6 @@ public class Calculator extends JFrame {
                 }
                 else{
                     prev = current;
-                    System.out.println("else prev = " + prev + " current = " + current);
                 }
             }
             prev= Math.round(prev *100000)/100000.0;
